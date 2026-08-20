@@ -48,9 +48,9 @@
       <div class="chart-header">
         <div class="chart-title-group">
           <div class="chart-title">
-            <span>🏆</span> Top 10 Participating Institutions
+            <span>🏆</span> Top 10 Shortlisted Institutions
           </div>
-          <div class="chart-subtitle">Comparison of total teams and total participant headcount</div>
+          <div class="chart-subtitle">Comparison of shortlisted teams and participant headcount</div>
         </div>
       </div>
       <div class="chart-wrapper">
@@ -63,43 +63,13 @@
       <div class="chart-header">
         <div class="chart-title-group">
           <div class="chart-title">
-            <span>👥</span> Team Size Breakdown
+            <span>👥</span> Shortlisted Team Size Breakdown
           </div>
-          <div class="chart-subtitle">Distribution of 3-member vs 2-member teams</div>
+          <div class="chart-subtitle">Distribution of 3-member vs 2-member shortlisted teams</div>
         </div>
       </div>
       <div class="chart-wrapper">
         <canvas id="chartTeamSize"></canvas>
-      </div>
-    </div>
-
-    <!-- Chart 3: Top Institutions by Participant Volume -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <div class="chart-title-group">
-          <div class="chart-title">
-            <span>🎓</span> Student Headcount Volume
-          </div>
-          <div class="chart-subtitle">Total individual student participants per top university</div>
-        </div>
-      </div>
-      <div class="chart-wrapper">
-        <canvas id="chartParticipantVolume"></canvas>
-      </div>
-    </div>
-
-    <!-- Chart 4: Institutional Collaboration Breakdown -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <div class="chart-title-group">
-          <div class="chart-title">
-            <span>🌐</span> Team Collaboration Structure
-          </div>
-          <div class="chart-subtitle">Intra-college vs cross-institution team formations</div>
-        </div>
-      </div>
-      <div class="chart-wrapper">
-        <canvas id="chartCollaboration"></canvas>
       </div>
     </div>
   </div>
@@ -278,83 +248,6 @@
                 const total = teamSize3 + teamSize2;
                 const val = context.raw;
                 const pct = ((val / total) * 100).toFixed(1);
-                return ` ${context.label}: ${val.toLocaleString()} (${pct}%)`;
-              }
-            }
-          }
-        }
-      }
-    });
-
-    // -------------------------------------------------------------
-    // Chart 3: Top Institutions Student Volume (Horizontal Bar Chart)
-    // -------------------------------------------------------------
-    const ctx3 = document.getElementById('chartParticipantVolume').getContext('2d');
-    new Chart(ctx3, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Student Headcount',
-          data: participantCounts,
-          backgroundColor: '#10b981',
-          borderRadius: 6,
-          barPercentage: 0.65
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              title: (items) => topOrgsRaw[items[0].dataIndex].fullName
-            }
-          }
-        },
-        scales: {
-          x: { grid: { color: gridColor }, ticks: { color: textColor } },
-          y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 } } }
-        }
-      }
-    });
-
-    // -------------------------------------------------------------
-    // Chart 4: Team Collaboration Structure (Doughnut Chart)
-    // -------------------------------------------------------------
-    const totalTeams = {{ stats.total_teams|default(26760) }};
-    const crossOrgTeams = {{ stats.cross_org_teams_count|default(3) }};
-    const intraOrgTeams = totalTeams - crossOrgTeams;
-
-    const ctx4 = document.getElementById('chartCollaboration').getContext('2d');
-    new Chart(ctx4, {
-      type: 'doughnut',
-      data: {
-        labels: ['Single-Institution Teams', 'Cross-Institution Teams'],
-        datasets: [{
-          data: [intraOrgTeams, crossOrgTeams],
-          backgroundColor: ['#6366f1', '#ec4899'],
-          borderColor: isDark ? '#151c2c' : '#ffffff',
-          borderWidth: 3,
-          hoverOffset: 6
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '72%',
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { color: textColor, usePointStyle: true, boxWidth: 10, padding: 16 }
-          },
-          tooltip: {
-            callbacks: {
-              label: (context) => {
-                const val = context.raw;
-                const pct = ((val / totalTeams) * 100).toFixed(2);
                 return ` ${context.label}: ${val.toLocaleString()} (${pct}%)`;
               }
             }

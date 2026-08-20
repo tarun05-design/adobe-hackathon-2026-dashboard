@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="MIT License" />
 </p>
 
-> A high-performance, responsive web application and full-text search engine built with **Python 3.12** and **FastAPI** to index, query, analyze, and explore **78,044 participant records across 26,760 teams** from the **Adobe University Hackathon 2026 Results**.
+> A high-performance, responsive web application and full-text search engine built with **Python 3.12** and **FastAPI** to index, query, analyze, and explore **78,044 shortlisted participant records across 26,760 shortlisted teams** from the **Adobe University Hackathon 2026 Results**.
 
 🌐 **Live Application**: [https://adobe-hackathon-2026-dashboard.vercel.app/](https://adobe-hackathon-2026-dashboard.vercel.app/)
 
@@ -47,8 +47,8 @@
 
 | Metric | Stat |
 | :--- | :--- |
-| **Total Participants** | **78,044** |
-| **Total Teams** | **26,760** |
+| **Shortlisted Participants** | **78,044** |
+| **Shortlisted Teams** | **26,760** |
 | **Participating Institutions** | **2,961** Universities & Colleges |
 | **Cross-Institution Teams** | **1,420** Teams |
 | **Average Query Latency** | **< 15ms** (In-Memory Python DataStore) |
