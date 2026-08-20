@@ -18,7 +18,7 @@ app = FastAPI(
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_PATH = os.path.join(BASE_DIR, "adobe_hackathon_results.json")
+DATA_PATH = os.getenv("DATA_FILE_PATH", os.path.join(BASE_DIR, "adobe_hackathon_results.json"))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 
