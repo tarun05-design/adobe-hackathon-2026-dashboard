@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Explore Results - Adobe Hackathon 2026 Dashboard{% endblock %}
+
+{% block content %}
+<div class="container hero-section">
+  <!-- Hero Header -->
+  <div class="hero-header">
+    <h1 class="hero-title">Adobe Hackathon 2026 - First Round Results</h1>
+    <p class="hero-subtitle">Search, filter, and explore all shortlisted teams and participant compositions across top academic institutions.</p>
+  </div>
+
+
+  <!-- Search & Filter Controls Toolbar -->
+  <div class="toolbar-panel">
+    <!-- Search Bar Input -->
+    <div class="search-box-wrap">
+      <svg class="search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search by participant name, team name, institution, or #index... (Press '/' to focus)" autofocus>
+      <button id="clearSearchBtn" class="clear-search-btn" title="Clear Search">✕</button>
+    </div>
+
+    <!-- Filters & Options Row -->
+    <div class="filter-row">
+      <div class="filter-group">
+        <!-- Organisation Select -->
+        <select id="orgSelect" class="filter-select">
+          <option value="">🏛️ All Institutions ({{ stats.total_organisations }})</option>
+          {% for org in organisations %}
+          <option value="{{ org.name }}">{{ org.name }} ({{ org.teams_count }} teams)</option>
+          {% endfor %}
+        </select>
+
+        <!-- Team Size Select -->
+        <select id="sizeSelect" class="filter-select">
+          <option value="">👥 All Team Sizes</option>
+          <option value="3">3 Members ({{ stats.team_size_distribution.get(3, 0) }})</option>
+          <option value="2">2 Members ({{ stats.team_size_distribution.get(2, 0) }})</option>
+        </select>
+
+        <!-- Cross Org Filter Toggle -->
+        <button id="crossOrgBtn" class="filter-btn" title="Filter teams with members from multiple universities">
+          🔀 Cross-Org
+        </button>
+
+        <!-- Sort Column Select -->
+        <select id="sortSelect" class="sort-select">
+          <option value="relevance" selected>Sort by Relevance / Match</option>
+          <option value="entry_index">Sort by Index (#)</option>
+          <option value="team_name">Sort by Team Name</option>
+          <option value="leader_name">Sort by Team Leader</option>
+          <option value="organisation">Sort by Institution</option>
+          <option value="size">Sort by Team Size</option>
+        </select>
+
+        <!-- Sort Direction Toggle -->
+        <button id="sortOrderBtn" class="filter-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="M11 4h10"/><path d="M11 8h7"/><path d="M11 12h4"/></svg> ASC
+        </button>
+      </div>
+
+      <!-- Right Action Controls: View Switcher & Export -->
+      <div class="view-actions">
+        <div class="view-toggle">
+          <button id="gridViewBtn" class="toggle-btn active" title="Grid View">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Cards
+          </button>
+          <button id="tableViewBtn" class="toggle-btn" title="Table View">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            List
+          </button>
+        </div>
+
+        <button id="exportBtn" class="btn-export" title="Export current search results as CSV">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Count Metadata -->
+  <div class="results-meta">
+    <div>
+      Showing <span id="matchCount" class="match-count">0</span> matching teams <span id="querySpeed" class="query-speed"></span>
+    </div>
+  </div>
+
+  <!-- Team Cards Grid Container -->
+  <div id="teamsGrid" class="teams-grid">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Team Table List Container -->
+  <div id="teamsTableWrap" class="teams-table-wrap">
+    <table class="teams-table">
+      <thead>
+        <tr>
+          <th>Entry #</th>
+          <th>Team Name</th>
+          <th>Leader</th>
+          <th>Institution</th>
+          <th>Size</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="teamsTableBody">
+        <!-- Rendered dynamically -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Bar -->
+  <div id="paginationContainer" class="pagination-container"></div>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+# Dataset (Hides raw dataset from Git repository)
+adobe_hackathon_results.json
+
+# Python cache & virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+ENV/
+
+# IDE & Editor settings
+.vscode/
+.idea/
+*.swp
+
+# Temporary files & Scratch
+scratch/
+.ds_store

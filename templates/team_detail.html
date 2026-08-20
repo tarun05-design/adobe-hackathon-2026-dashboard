@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Team #{{ team.entry_index }} - {{ team.team_name }} - Adobe Hackathon 2026{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 4rem; max-width: 900px;">
+  <!-- Breadcrumb Navigation -->
+  <div style="margin-bottom: 1.5rem;">
+    <a href="/" style="color:var(--text-secondary); font-size:0.9rem; font-weight:600; display:inline-flex; align-items:center; gap:6px;">
+      ← Back to All Teams
+    </a>
+  </div>
+
+  <!-- Team Header Panel -->
+  <div class="toolbar-panel" style="margin-bottom: 2rem;">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+      <div>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.6rem;">
+          <span class="team-index-badge" style="font-size:0.9rem;">Team Index #{{ team.entry_index }}</span>
+          {% if team.is_cross_org %}
+          <span class="team-size-tag" style="background:rgba(234, 179, 8, 0.15); color:#facc15;">Cross-Institution</span>
+          {% endif %}
+          <span class="team-size-tag">{{ team.member_count }} Members</span>
+        </div>
+        <h1 style="font-size:2.2rem; font-weight:800; line-height:1.2; word-break:break-word;">{{ team.team_name }}</h1>
+      </div>
+
+      <button class="filter-btn" onclick="navigator.clipboard.writeText(window.location.href); alert('Team link copied to clipboard!');">
+        📋 Copy Direct Link
+      </button>
+    </div>
+  </div>
+
+  <!-- Member Roster Cards -->
+  <h2 style="font-size:1.3rem; font-weight:800; margin-bottom:1.25rem;">Team Roster & Members</h2>
+
+  <div style="display:flex; flex-direction:column; gap:1.25rem;">
+    {% for member in team.members %}
+    <div class="team-card" style="padding:1.5rem;">
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:0.75rem;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span class="role-badge {% if member.role.lower() == 'leader' %}leader{% else %}member{% endif %}" style="font-size:0.78rem; padding:4px 10px;">
+            {{ member.role }}
+          </span>
+          <h3 style="font-size:1.3rem; font-weight:700;">{{ member.player_name }}</h3>
+        </div>
+      </div>
+
+      <div style="font-size:0.95rem; color:var(--text-secondary); display:flex; align-items:center; gap:8px;">
+        <span>🏛️</span>
+        <strong>Academic Institution:</strong> {{ member.organisation if member.organisation else 'N/A' }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
