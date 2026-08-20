@@ -1,6 +1,8 @@
-# Large Dataset File (Hidden/Ignored from version control)
+# Raw Uncompressed Large Dataset (Ignored from version control)
 adobe_hackathon_results.json
-*.json.gz
+
+# Compressed Dataset (Tracked for serverless Vercel deployment - 2.3MB)
+!adobe_hackathon_results.json.gz
 
 
 # Python cache & virtual environments

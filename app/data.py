@@ -24,7 +24,13 @@ class DataStore:
     def load_data(self):
         start_time = time.time()
 
-        if not os.path.exists(self.json_path):
+        target_path = self.json_path
+        gz_path = self.json_path + ".gz" if not self.json_path.endswith(".gz") else self.json_path
+
+        if not os.path.exists(target_path) and os.path.exists(gz_path):
+            target_path = gz_path
+
+        if not os.path.exists(target_path):
             print(f"[WARNING] Dataset file not found at '{self.json_path}'. Server running with empty DataStore.")
             self.stats = {
                 "total_participants": 0,
@@ -38,8 +44,13 @@ class DataStore:
             }
             return
 
-        with open(self.json_path, "r", encoding="utf-8") as f:
-            raw_data = json.load(f)
+        if target_path.endswith(".gz"):
+            import gzip
+            with gzip.open(target_path, "rt", encoding="utf-8") as f:
+                raw_data = json.load(f)
+        else:
+            with open(target_path, "r", encoding="utf-8") as f:
+                raw_data = json.load(f)
 
         teams_dict: Dict[int, Dict[str, Any]] = {}
         org_teams_counter = Counter()
