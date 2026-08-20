@@ -1,5 +1,5 @@
-# Dataset (Hides raw dataset from Git repository)
-adobe_hackathon_results.json
+# Dataset (Included for Vercel deployment)
+# adobe_hackathon_results.json
 
 # Python cache & virtual environments
 __pycache__/
