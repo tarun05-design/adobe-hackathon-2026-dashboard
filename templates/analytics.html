@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Institution Analytics - Adobe Hackathon 2026 Dashboard{% endblock %}
+{% block title %}Institution Analytics & Charts - Adobe Hackathon 2026 Dashboard{% endblock %}
 
 {% block content %}
 <div class="container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
   <div class="hero-header" style="text-align:left; margin-bottom:2rem;">
     <h1 class="hero-title">Academic Institutions & Participation Analytics</h1>
-    <p class="hero-subtitle" style="margin:0;">Explore participation metrics across 2,961 universities and colleges in Adobe Hackathon 2026.</p>
+    <p class="hero-subtitle" style="margin:0;">Explore participation metrics, college rankings, and team size distributions across 2,961 universities.</p>
   </div>
 
   <!-- Analytics Highlights Bar -->
@@ -14,14 +14,14 @@
     <div class="stat-card">
       <div class="stat-icon red">🏛️</div>
       <div class="stat-info">
-        <span class="stat-value">{{ stats.total_organisations }}</span>
+        <span class="stat-value">{{ stats.total_organisations|default(2961) }}</span>
         <span class="stat-label">Unique Colleges</span>
       </div>
     </div>
     <div class="stat-card">
       <div class="stat-icon blue">🥇</div>
       <div class="stat-info">
-        <span class="stat-value">{{ organisations[0].teams_count }}</span>
+        <span class="stat-value">{{ organisations[0].teams_count|default(534) }}</span>
         <span class="stat-label">Top Institution Teams</span>
       </div>
     </div>
@@ -35,8 +35,71 @@
     <div class="stat-card">
       <div class="stat-icon purple">🔀</div>
       <div class="stat-info">
-        <span class="stat-value">{{ stats.cross_org_teams_count }}</span>
+        <span class="stat-value">{{ stats.cross_org_teams_count|default(3) }}</span>
         <span class="stat-label">Cross-Org Teams</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Charts Grid Section -->
+  <div class="charts-grid">
+    <!-- Chart 1: Top 10 Institutions (Teams vs Participants) -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title-group">
+          <div class="chart-title">
+            <span>🏆</span> Top 10 Participating Institutions
+          </div>
+          <div class="chart-subtitle">Comparison of total teams and total participant headcount</div>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="chartTopColleges"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 2: Team Size Distribution -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title-group">
+          <div class="chart-title">
+            <span>👥</span> Team Size Breakdown
+          </div>
+          <div class="chart-subtitle">Distribution of 3-member vs 2-member teams</div>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="chartTeamSize"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 3: Top Institutions by Participant Volume -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title-group">
+          <div class="chart-title">
+            <span>🎓</span> Student Headcount Volume
+          </div>
+          <div class="chart-subtitle">Total individual student participants per top university</div>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="chartParticipantVolume"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 4: Institutional Collaboration Breakdown -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title-group">
+          <div class="chart-title">
+            <span>🌐</span> Team Collaboration Structure
+          </div>
+          <div class="chart-subtitle">Intra-college vs cross-institution team formations</div>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="chartCollaboration"></canvas>
       </div>
     </div>
   </div>
@@ -44,8 +107,11 @@
   <!-- Top Institutions Ranking Table -->
   <div class="toolbar-panel" style="padding: 1.5rem;">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
-      <h2 style="font-size:1.3rem; font-weight:800;">Top Participating Institutions (Top 50)</h2>
-      <a href="/" class="btn-export" style="height:36px; padding:0 12px; font-size:0.82rem;">
+      <div>
+        <h2 style="font-size:1.3rem; font-weight:800; margin:0;">Top Participating Institutions</h2>
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:2px;">Showing rankings and metrics for the top participating colleges.</p>
+      </div>
+      <a href="/" class="btn-export" style="height:36px; padding:0 12px; font-size:0.82rem; text-decoration:none;">
         Search in Dashboard →
       </a>
     </div>
@@ -69,7 +135,7 @@
             <td style="font-family:var(--font-mono); font-weight:700; text-align:right;">{{ org.teams_count }}</td>
             <td style="font-family:var(--font-mono); font-weight:700; text-align:right; color:var(--accent-red);">{{ org.participants_count }}</td>
             <td style="text-align:center;">
-              <a href="/?org={{ org.name|urlencode }}" class="btn-view-details" style="justify-content:center;">
+              <a href="/?org={{ org.name|urlencode }}" class="btn-view-details" style="justify-content:center; text-decoration:none;">
                 View Teams
               </a>
             </td>
@@ -80,4 +146,222 @@
     </div>
   </div>
 </div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Extract server data for top 10 colleges
+    const topOrgsRaw = [
+      {% for org in organisations[:10] %}
+      {
+        fullName: {{ org.name|tojson }},
+        teams: {{ org.teams_count }},
+        participants: {{ org.participants_count }}
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ];
+
+    // Helper to shorten institution names for chart labels
+    function simplifyOrgName(name) {
+      if (name.includes('SRM Institute')) return 'SRMIST Chennai';
+      if (name.includes('Thapar Institute')) return 'Thapar Univ';
+      if (name.includes('Sri Eshwar')) return 'Sri Eshwar (SECE)';
+      if (name.includes('Vellore Institute of Technology (VIT), Vellore')) return 'VIT Vellore';
+      if (name.includes('Vellore Institute of Technology (VIT-AP)')) return 'VIT AP';
+      if (name.includes('Delhi Technological University')) return 'DTU Delhi';
+      if (name.includes('Manipal University')) return 'MU Jaipur';
+      if (name.includes('ABES Engineering')) return 'ABES Engg';
+      if (name.includes('Lovely Professional')) return 'LPU Punjab';
+      if (name.includes('Koneru Lakshmaiah')) return 'KL Univ';
+      if (name.includes('Kalinga Institute')) return 'KIIT Bhubaneswar';
+      if (name.includes('Chitkara')) return 'Chitkara Univ';
+      if (name.includes('Aditya')) return 'Aditya Univ';
+      if (name.includes('Kharagpur')) return 'IIT Kharagpur';
+      if (name.includes('Netaji Subhas')) return 'NSUT Delhi';
+      
+      // Fallback shorten
+      return name.split(',')[0].replace(/\(.*?\)/g, '').trim();
+    }
+
+    const labels = topOrgsRaw.map(o => simplifyOrgName(o.fullName));
+    const teamCounts = topOrgsRaw.map(o => o.teams);
+    const participantCounts = topOrgsRaw.map(o => o.participants);
+
+    // Theme color helper
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    const textColor = isDark ? '#94a3b8' : '#475569';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)';
+
+    // Global Chart Defaults
+    Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+    Chart.defaults.color = textColor;
+
+    // -------------------------------------------------------------
+    // Chart 1: Top 10 Colleges (Teams vs Participants Bar Chart)
+    // -------------------------------------------------------------
+    const ctx1 = document.getElementById('chartTopColleges').getContext('2d');
+    new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Teams',
+            data: teamCounts,
+            backgroundColor: '#ff2a4b',
+            borderRadius: 6,
+            barPercentage: 0.6
+          },
+          {
+            label: 'Participants',
+            data: participantCounts,
+            backgroundColor: '#3b82f6',
+            borderRadius: 6,
+            barPercentage: 0.6
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { color: textColor, usePointStyle: true, boxWidth: 8 }
+          },
+          tooltip: {
+            callbacks: {
+              title: (items) => topOrgsRaw[items[0].dataIndex].fullName
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 } } },
+          y: { grid: { color: gridColor }, ticks: { color: textColor } }
+        }
+      }
+    });
+
+    // -------------------------------------------------------------
+    // Chart 2: Team Size Breakdown (Doughnut Chart)
+    // -------------------------------------------------------------
+    const teamSize3 = {{ stats.team_size_distribution.get(3, 24524) }};
+    const teamSize2 = {{ stats.team_size_distribution.get(2, 2236) }};
+    
+    const ctx2 = document.getElementById('chartTeamSize').getContext('2d');
+    new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: ['3-Member Teams', '2-Member Teams'],
+        datasets: [{
+          data: [teamSize3, teamSize2],
+          backgroundColor: ['#ff2a4b', '#3b82f6'],
+          borderColor: isDark ? '#151c2c' : '#ffffff',
+          borderWidth: 3,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '72%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: textColor, usePointStyle: true, boxWidth: 10, padding: 16 }
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const total = teamSize3 + teamSize2;
+                const val = context.raw;
+                const pct = ((val / total) * 100).toFixed(1);
+                return ` ${context.label}: ${val.toLocaleString()} (${pct}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // -------------------------------------------------------------
+    // Chart 3: Top Institutions Student Volume (Horizontal Bar Chart)
+    // -------------------------------------------------------------
+    const ctx3 = document.getElementById('chartParticipantVolume').getContext('2d');
+    new Chart(ctx3, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Student Headcount',
+          data: participantCounts,
+          backgroundColor: '#10b981',
+          borderRadius: 6,
+          barPercentage: 0.65
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: (items) => topOrgsRaw[items[0].dataIndex].fullName
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: gridColor }, ticks: { color: textColor } },
+          y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 } } }
+        }
+      }
+    });
+
+    // -------------------------------------------------------------
+    // Chart 4: Team Collaboration Structure (Doughnut Chart)
+    // -------------------------------------------------------------
+    const totalTeams = {{ stats.total_teams|default(26760) }};
+    const crossOrgTeams = {{ stats.cross_org_teams_count|default(3) }};
+    const intraOrgTeams = totalTeams - crossOrgTeams;
+
+    const ctx4 = document.getElementById('chartCollaboration').getContext('2d');
+    new Chart(ctx4, {
+      type: 'doughnut',
+      data: {
+        labels: ['Single-Institution Teams', 'Cross-Institution Teams'],
+        datasets: [{
+          data: [intraOrgTeams, crossOrgTeams],
+          backgroundColor: ['#6366f1', '#ec4899'],
+          borderColor: isDark ? '#151c2c' : '#ffffff',
+          borderWidth: 3,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '72%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: textColor, usePointStyle: true, boxWidth: 10, padding: 16 }
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const val = context.raw;
+                const pct = ((val / totalTeams) * 100).toFixed(2);
+                return ` ${context.label}: ${val.toLocaleString()} (${pct}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
 {% endblock %}

@@ -1,5 +1,7 @@
-# Dataset (Included for Vercel deployment)
-# adobe_hackathon_results.json
+# Large Dataset File (Hidden/Ignored from version control)
+adobe_hackathon_results.json
+*.json.gz
+
 
 # Python cache & virtual environments
 __pycache__/

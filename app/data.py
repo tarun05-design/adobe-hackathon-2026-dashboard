@@ -11,13 +11,32 @@ class DataStore:
         self.teams_list: List[Dict[str, Any]] = []
         self.organisations_list: List[Dict[str, Any]] = []
         self.organisations_names: List[str] = []
-        self.stats: Dict[str, Any] = {}
+        self.stats: Dict[str, Any] = {
+            "total_participants": 0,
+            "total_teams": 0,
+            "total_organisations": 0,
+            "team_size_distribution": {3: 0, 2: 0},
+            "cross_org_teams_count": 0,
+            "top_organisations": [],
+            "load_time_seconds": 0.0
+        }
 
     def load_data(self):
         start_time = time.time()
 
         if not os.path.exists(self.json_path):
-            raise FileNotFoundError(f"Dataset file not found at: {self.json_path}")
+            print(f"[WARNING] Dataset file not found at '{self.json_path}'. Server running with empty DataStore.")
+            self.stats = {
+                "total_participants": 0,
+                "total_teams": 0,
+                "total_organisations": 0,
+                "team_size_distribution": {3: 0, 2: 0},
+                "cross_org_teams_count": 0,
+                "top_organisations": [],
+                "load_time_seconds": 0.0,
+                "dataset_missing": True
+            }
+            return
 
         with open(self.json_path, "r", encoding="utf-8") as f:
             raw_data = json.load(f)
