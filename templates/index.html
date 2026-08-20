@@ -10,37 +10,7 @@
     <p class="hero-subtitle">Search, filter, and explore all teams and participant compositions across top academic institutions.</p>
   </div>
 
-  <!-- Quick Stats & Analytics Link Bar -->
-  <div class="stats-grid" style="margin-bottom: 2rem;">
-    <div class="stat-card">
-      <div class="stat-icon red">⚡</div>
-      <div class="stat-info">
-        <span class="stat-value">{{ stats.total_teams|default(26760) }}</span>
-        <span class="stat-label">Total Teams</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon blue">👥</div>
-      <div class="stat-info">
-        <span class="stat-value">{{ stats.total_participants|default(78044) }}</span>
-        <span class="stat-label">Total Participants</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon green">🏛️</div>
-      <div class="stat-info">
-        <span class="stat-value">{{ stats.total_organisations|default(2961) }}</span>
-        <span class="stat-label">Universities & Colleges</span>
-      </div>
-    </div>
-    <a href="/analytics" class="stat-card" style="text-decoration:none; transition:transform 0.2s;" title="View Institution Analytics & Interactive Charts">
-      <div class="stat-icon purple">📊</div>
-      <div class="stat-info">
-        <span class="stat-value" style="font-size:1.1rem; color:var(--badge-leader-color);">Interactive Charts →</span>
-        <span class="stat-label">View Institution Analytics</span>
-      </div>
-    </a>
-  </div>
+
   <!-- Search & Filter Controls Toolbar -->
   <div class="toolbar-panel">
     <!-- Search Bar Input -->
