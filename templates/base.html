@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Adobe Hackathon 2026 Results Dashboard{% endblock %}</title>
+  <title>{% block title %}Adobe University Hackathon 2026 Results Dashboard{% endblock %}</title>
   <meta name="description"
-    content="Explore, search, and filter 78,044 participant records across 26,760 teams from Adobe Hackathon 2026 first-round results.">
+    content="Explore, search, and filter 78,044 participant records across 26,760 teams from Adobe University Hackathon 2026 results.">
 
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="/static/css/styles.css">
@@ -24,10 +24,7 @@
           </svg>
         </div>
         <div style="display:flex; flex-direction:column;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="brand-title">Adobe Hackathon</span>
-            <span class="brand-tag">Round 1 Shortlisted Teams</span>
-          </div>
+          <span class="brand-title">Adobe University Hackathon</span>
         </div>
       </a>
 
@@ -70,7 +67,7 @@
   <!-- Footer -->
   <footer>
     <div class="container">
-      <p>Adobe Hackathon 2026 First Round Results Dashboard • Powered by FastAPI & Data Engine</p>
+      <p>Adobe University Hackathon 2026 Results Dashboard • Powered by FastAPI & Data Engine</p>
       <p style="font-size:0.75rem; margin-top:4px;">Indexed {{ stats.total_teams|default(26760) }} teams and {{
         stats.total_participants|default(78044) }} participants across {{ stats.total_organisations|default(2961) }}
         academic institutions.</p>

@@ -1,4 +1,4 @@
-# ⚡ Adobe Hackathon 2026 — First Round Results Dashboard
+# ⚡ Adobe University Hackathon 2026 — Results Dashboard
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.12%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.12+" />
@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="MIT License" />
 </p>
 
-> A high-performance, responsive web application and full-text search engine built with **Python 3.12** and **FastAPI** to index, query, analyze, and explore **78,044 participant records across 26,760 teams** from the **Adobe Hackathon 2026 First Round Results**.
+> A high-performance, responsive web application and full-text search engine built with **Python 3.12** and **FastAPI** to index, query, analyze, and explore **78,044 participant records across 26,760 teams** from the **Adobe University Hackathon 2026 Results**.
 
 🌐 **Live Application**: [https://adobe-hackathon-2026-dashboard.vercel.app/](https://adobe-hackathon-2026-dashboard.vercel.app/)
 

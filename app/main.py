@@ -11,7 +11,7 @@ from app.data import DataStore
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Adobe Hackathon 2026 Results Dashboard",
+    title="Adobe University Hackathon 2026 Results Dashboard",
     description="Search, filter, and explore 78,044 participant records across 26,760 teams.",
     version="1.0.0"
 )
